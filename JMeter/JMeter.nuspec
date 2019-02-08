@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>JMeter</id>
+        <version>3.1.0.1</version>
+        <authors>phmarques</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>The Apache JMeter™ application is open source software, a 100% pure Java application designed to load test functional behavior and measure performance. It was originally designed for testing Web Applications but has since expanded to other test functions.</description>
+    </metadata>
+</package>
