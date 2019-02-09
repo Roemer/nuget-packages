@@ -10,52 +10,47 @@ var configuration = Argument("configuration", "Release");
 ///////////////////////////////////////////////////////////////////////////////
 
 var temp = Directory("./.temp");
+CleanDirectory(temp);
 
 Task("JMeter")
    .Does(() =>
 {
-   //var resource = DownloadFile("http://www.pirbot.com/mirrors/apache//jmeter/binaries/apache-jmeter-5.0.zip");
-   //Unzip(resource, temp + Directory("JMeter"));
+   var jMeterVersion = "5.0";
+   var jMeterPath = temp + Directory($"apache-jmeter-{jMeterVersion}");
+   var libPath = jMeterPath + Directory("lib");
+   var extPath = libPath + Directory("ext");
 
-   var jMeterPath = temp + Directory("JMeter");
-   var innerPath = jMeterPath + Directory("apache-jmeter-5.0");
+   // Download and Extract JMeter
+   var resource = DownloadFile($"http://www.pirbot.com/mirrors/apache//jmeter/binaries/apache-jmeter-{jMeterVersion}.zip");
+   Unzip(resource, temp);
 
-   var extensionsPath = innerPath + Directory("lib") + Directory("ext");
+   // Install the plugin manager
+   DownloadFile("http://search.maven.org/remotecontent?filepath=kg/apc/jmeter-plugins-manager/1.3/jmeter-plugins-manager-1.3.jar", extPath + File("jmeter-plugins-manager-1.3.jar"));
 
-   // Download the plugin manager
-   var outputPath = extensionsPath + File("jmeter-plugins-manager-1.3.jar");
-   DownloadFile("http://search.maven.org/remotecontent?filepath=kg/apc/jmeter-plugins-manager/1.3/jmeter-plugins-manager-1.3.jar", outputPath);
-   // Download most common plugins
-   // See: http://flauschig.ch/imgshare/img/1819966995c5db20d43b58.png
+   // Install the command runner
+   DownloadFile("https://search.maven.org/remotecontent?filepath=kg/apc/cmdrunner/2.2/cmdrunner-2.2.jar", libPath + File("cmdrunner-2.2.jar"));
+   // Generate the cmd wrappers
+   var exitCodeWithArgument = StartProcess("java", new ProcessSettings{ Arguments = $"-cp {jMeterPath}/lib/ext/jmeter-plugins-manager-1.3.jar org.jmeterplugins.repository.PluginManagerCMDInstaller" });
 
-   return;
-
-
+   // Create the NuGet package
+   CleanDirectory("./.nuget");
    var nuGetPackSettings   = new NuGetPackSettings {
-      Id                       = "TestNuget",
-      Version                  = "0.0.0.1",
-      Title                    = "The tile of the package",
-      Authors                  = new[] {"John Doe"},
-      Owners                   = new[] {"Contoso"},
-      Description              = "The description of the package",
-      Summary                  = "Excellent summary of what the package does",
-      ProjectUrl               = new Uri("https://github.com/SomeUser/TestNuget/"),
-      IconUrl                  = new Uri("http://cdn.rawgit.com/SomeUser/TestNuget/master/icons/testnuget.png"),
-      LicenseUrl               = new Uri("https://github.com/SomeUser/TestNuget/blob/master/LICENSE.md"),
-      Copyright                = "Some company 2015",
-      ReleaseNotes             = new [] {"Bug fixes", "Issue fixes", "Typos"},
-      Tags                     = new [] {"Cake", "Script", "Build"},
+      Id                       = "JMeter",
+      Version                  = "5.0.0",
+      Authors                  = new[] {"phmarques, Roemer"},
+      Description              = "The Apache JMeter™ application is open source software, a 100% pure Java application designed to load test functional behavior and measure performance. It was originally designed for testing Web Applications but has since expanded to other test functions.",
+      ProjectUrl               = new Uri("https://github.com/Roemer/nuget-packages"),
+      LicenseUrl               = new Uri("https://www.apache.org/licenses/"),
       RequireLicenseAcceptance = false,
       Symbols                  = false,
       NoPackageAnalysis        = true,
       Files                    = new [] {
-                                    new NuSpecContent {Source = ".temp/JMeter/apache-jmeter-5.0/README.md", Target = "tools"},
-                                 },
+                                 new NuSpecContent { Source = @".temp\apache-jmeter-5.0\**", Exclude = @".temp\apache-jmeter-5.0\docs\**;.temp\apache-jmeter-5.0\printable_docs\**", Target = "tools" }
+                              },
       BasePath                 = "./",
       OutputDirectory          = "./.nuget"
    };
-
-   NuGetPack("./JMeter/JMeter.nuspec", nuGetPackSettings);
+   NuGetPack(nuGetPackSettings);
 });
 
 Task("Default")
