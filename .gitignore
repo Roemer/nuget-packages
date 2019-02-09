@@ -1,0 +1,6 @@
+.cake/*
+!.cake/packages.config
+
+.temp/
+
+.nuget/
