@@ -15,7 +15,7 @@ CleanDirectory(temp);
 Task("JMeter")
    .Does(() =>
 {
-   var jMeterVersion = "5.0";
+   var jMeterVersion = "5.1";
    var jMeterPath = temp + Directory($"apache-jmeter-{jMeterVersion}");
    var libPath = jMeterPath + Directory("lib");
    var extPath = libPath + Directory("ext");
@@ -36,7 +36,7 @@ Task("JMeter")
    CleanDirectory("./.nuget");
    var nuGetPackSettings   = new NuGetPackSettings {
       Id                       = "JMeter",
-      Version                  = "5.0.0",
+      Version                  = "5.1.0",
       Authors                  = new[] {"phmarques, Roemer"},
       Description              = "The Apache JMeter™ application is open source software, a 100% pure Java application designed to load test functional behavior and measure performance. It was originally designed for testing Web Applications but has since expanded to other test functions.",
       ProjectUrl               = new Uri("https://github.com/Roemer/nuget-packages"),
@@ -45,7 +45,7 @@ Task("JMeter")
       Symbols                  = false,
       NoPackageAnalysis        = true,
       Files                    = new [] {
-                                 new NuSpecContent { Source = @".temp\apache-jmeter-5.0\**", Exclude = @".temp\apache-jmeter-5.0\docs\**;.temp\apache-jmeter-5.0\printable_docs\**", Target = "tools" }
+                                 new NuSpecContent { Source = $@".temp\apache-jmeter-{jMeterVersion}\**", Exclude = $@".temp\apache-jmeter-{jMeterVersion}\docs\**;.temp\apache-jmeter-{jMeterVersion}\printable_docs\**", Target = "tools" }
                               },
       BasePath                 = "./",
       OutputDirectory          = "./.nuget"
