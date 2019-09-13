@@ -87,6 +87,48 @@ Task("dotnet-framework-sonarscanner")
     NuGetPack(nuGetPackSettings);
 });
 
+Task("7-Zip.StandaloneConsole")
+    .Does(() =>
+{
+    var version = "19.00";
+
+    var resource = DownloadFile($"https://www.7-zip.org/a/7z{version.Replace(".", "")}-extra.7z");
+    UnSevenZip(resource, temp);
+
+    resource = DownloadFile($"https://www.7-zip.org/a/7z{version.Replace(".", "")}-x64.exe");
+    UnSevenZip(resource, temp);
+
+    var nuGetPackSettings = new NuGetPackSettings {
+        Id                          = "7-Zip.StandaloneConsole",
+        Title                       = "7-Zip Standalone Console Version",
+        Version                     = version,
+        Authors                     = new[] {"Igor Pavlov", "Roemer"},
+        Description                 = "Standalone Console Version of the 7-Zip packer/unpacker.",
+        ProjectUrl                  = new Uri("https://github.com/Roemer/nuget-packages"),
+        License                     = new NuSpecLicense {
+                                        Type = "file",
+                                        Value = @"tools\License.txt"
+                                    },
+        IconUrl                     = new Uri("http://www.7-zip.org/7ziplogo.png"),
+        ReleaseNotes                = new [] {"https://www.7-zip.org/history.txt"},
+        Tags                        = new [] {"7z", "7zip", "7-Zip", "ZIP", "xz", "GZIP", "BZIP2", "TAR", "Z", "lzma", "CAB", "7za"},
+        RequireLicenseAcceptance    = false,
+        Symbols                     = false,
+        NoPackageAnalysis           = true,
+        Files                       = new [] {
+                                        new NuSpecContent { Source = temp + File("7za.exe"), Target = "tools" },
+                                        new NuSpecContent { Source = temp + File("7-zip.chm"), Target = "tools" },
+                                        new NuSpecContent { Source = temp + File("readme.txt"), Target = "tools" },
+                                        new NuSpecContent { Source = temp + File("License.txt"), Target = "tools" },
+                                        // x64
+                                        new NuSpecContent { Source = temp + Directory("x64") + File("7za.exe"), Target = @"tools\x64" }
+                                    },
+        BasePath                    = "./",
+        OutputDirectory             = nugetDir
+    };
+    NuGetPack(nuGetPackSettings);
+});
+
 Task("Default")
     .Does(() =>
 {
@@ -94,3 +136,14 @@ Task("Default")
 });
 
 RunTarget(target);
+
+private void UnSevenZip(FilePath fileToExtract, DirectoryPath targetDirectory)
+{
+    var settings = new ProcessSettings
+    {
+        WorkingDirectory = MakeAbsolute(targetDirectory),
+        Arguments = $"x -aoa {MakeAbsolute(fileToExtract).ToString().Quote()} *"
+    };
+    var exePath = Context.Environment.GetSpecialPath(SpecialPath.ProgramFiles).CombineWithFilePath(@"7-Zip\7z.exe");
+    StartProcess(exePath, settings);
+}
