@@ -12,27 +12,30 @@ var configuration = Argument("configuration", "Release");
 var temp = Directory("./.temp");
 var nugetDir = Directory("./.nuget");
 
-Setup(context =>
-{
-    CleanDirectory(nugetDir);
-});
-
 TaskSetup(setupContext =>
 {
     CleanDirectory(temp);
 });
 
+
+Task("Clean-Output")
+    .Does(() =>
+{
+    CleanDirectory(nugetDir);
+});
+
 Task("All")
+    .IsDependentOn("Clean-Output")
     .IsDependentOn("JMeter")
     .IsDependentOn("dotnet-framework-sonarscanner")
     .IsDependentOn("7-Zip.StandaloneConsole")
     .IsDependentOn("Flyway.CommandLine")
-    .IsDependentOn("Flyway.CommandLine.Jre")
     .Does(() =>
 {
 });
 
 Task("JMeter")
+    .IsDependentOn("Clean-Output")
     .Does(() =>
 {
     var jMeterVersion = "5.1.1";
@@ -73,6 +76,7 @@ Task("JMeter")
 });
 
 Task("dotnet-framework-sonarscanner")
+    .IsDependentOn("Clean-Output")
     .Does(() =>
 {
     var version = "4.7.1";
@@ -106,6 +110,7 @@ Task("dotnet-framework-sonarscanner")
 });
 
 Task("7-Zip.StandaloneConsole")
+    .IsDependentOn("Clean-Output")
     .Does(() =>
 {
     var version = "19.00";
@@ -148,16 +153,12 @@ Task("7-Zip.StandaloneConsole")
 });
 
 Task("Flyway.CommandLine")
+    .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "6.0.4";
-
-    var resource = DownloadFile($"https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/{version}/flyway-commandline-{version}.zip");
-    Unzip(resource, temp);
+    var version = "6.0.6";
 
     var nuGetPackSettings = new NuGetPackSettings {
-        Id                          = "Flyway.CommandLine",
-        Title                       = "Flyway command-line tool",
         Version                     = version,
         Authors                     = new[] {"Boxfuse", "Roemer"},
         Description                 = "The Flyway command-line tool is a standalone Flyway distribution. It is primarily meant for users who wish to migrate their database from the command-line without having to integrate Flyway into their applications nor having to install a build tool.",
@@ -178,49 +179,45 @@ Task("Flyway.CommandLine")
         BasePath                    = "./",
         OutputDirectory             = nugetDir
     };
-    NuGetPack(nuGetPackSettings);
+
+    // Handle the file without jre
+    {
+        var resource = DownloadFile($"https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/{version}/flyway-commandline-{version}.zip");
+        Unzip(resource, temp);
+
+        nuGetPackSettings.Id = "Flyway.CommandLine";
+        nuGetPackSettings.Title = "Flyway command-line tool";
+
+        NuGetPack(nuGetPackSettings);
+    }
+
+    CleanDirectory(temp);
+
+    // Handle the file with JRE
+    {
+        var resource = DownloadFile($"https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/{version}/flyway-commandline-{version}-windows-x64.zip");
+        Unzip(resource, temp);
+
+        nuGetPackSettings.Id = "Flyway.CommandLine.Jre";
+        nuGetPackSettings.Title = "Flyway command-line tool with JRE";
+
+        NuGetPack(nuGetPackSettings);
+    }
 });
 
-Task("Flyway.CommandLine.Jre")
+Task("Push-Packages")
     .Does(() =>
 {
-    var version = "6.0.4";
+    var apiKey = System.IO.File.ReadAllText(".nugetapikey");
 
-    var resource = DownloadFile($"https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/{version}/flyway-commandline-{version}-windows-x64.zip");
-    Unzip(resource, temp);
-
-    var nuGetPackSettings = new NuGetPackSettings {
-        Id                          = "Flyway.CommandLine.Jre",
-        Title                       = "Flyway command-line tool with JRE",
-        Version                     = version,
-        Authors                     = new[] {"Boxfuse", "Roemer"},
-        Description                 = "The Flyway command-line tool is a standalone Flyway distribution. It is primarily meant for users who wish to migrate their database from the command-line without having to integrate Flyway into their applications nor having to install a build tool.",
-        ProjectUrl                  = new Uri("https://github.com/Roemer/nuget-packages"),
-        License                     = new NuSpecLicense {
-                                        Type = "file",
-                                        Value = @"tools\licenses\flyway-community.txt"
-                                    },
-        IconUrl                     = new Uri("https://flywaydb.org/assets/logo/flyway-logo.png"),
-        ReleaseNotes                = new [] {"All release notes can be found on - https://flywaydb.org/documentation/releaseNotes"},
-        Tags                        = new [] {"flyway", "migration", "db"},
-        RequireLicenseAcceptance    = false,
-        Symbols                     = false,
-        NoPackageAnalysis           = true,
-        Files                       = new [] {
-                                        new NuSpecContent { Source = $@".temp\flyway-{version}\**", Target = "tools" }
-                                    },
-        BasePath                    = "./",
-        OutputDirectory             = nugetDir
-    };
-    NuGetPack(nuGetPackSettings);
-});
-
-
-Task("Flyway.All")
-    .IsDependentOn("Flyway.CommandLine")
-    .IsDependentOn("Flyway.CommandLine.Jre")
-    .Does(() =>
-{
+    var files = GetFiles($"{nugetDir}/*.nupkg");
+    foreach (var package in files) {
+        Information($"Pushing {package}");
+        NuGetPush(package, new NuGetPushSettings {
+            Source = "https://nuget.org/api/v2/package",
+            ApiKey = apiKey
+        });
+    }
 });
 
 Task("Default")
