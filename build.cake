@@ -84,8 +84,8 @@ Task("dotnet-framework-sonarscanner")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "4.7.1";
-    var versionSuffix = "2311";
+    var version = "4.8.0";
+    var versionSuffix = "12008";
 
     var fullVersionString = $"{version}.{versionSuffix}";
     var resource = DownloadFile($"https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/{fullVersionString}/sonar-scanner-msbuild-{fullVersionString}-net46.zip");
