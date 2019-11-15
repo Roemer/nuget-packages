@@ -38,14 +38,19 @@ Task("JMeter")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var jMeterVersion = "5.1.1";
+    var jMeterVersion = "5.2";
     var jMeterPath = temp + Directory($"apache-jmeter-{jMeterVersion}");
     var libPath = jMeterPath + Directory("lib");
     var extPath = libPath + Directory("ext");
 
-    // Download and Extract JMeter
-    var resource = DownloadFile($"http://www.pirbot.com/mirrors/apache//jmeter/binaries/apache-jmeter-{jMeterVersion}.zip");
-    Unzip(resource, temp);
+    // Download and Extract JMeter (with two mirrors)
+    try {
+        var resource = DownloadFile($"http://www.pirbot.com/mirrors/apache//jmeter/binaries/apache-jmeter-{jMeterVersion}.zip");
+        Unzip(resource, temp);
+    } catch {
+        var resource = DownloadFile($"http://mirror.easyname.ch/apache//jmeter/binaries/apache-jmeter-{jMeterVersion}.zip");
+        Unzip(resource, temp);
+    }
 
     // Install the plugin manager
     DownloadFile("http://search.maven.org/remotecontent?filepath=kg/apc/jmeter-plugins-manager/1.3/jmeter-plugins-manager-1.3.jar", extPath + File("jmeter-plugins-manager-1.3.jar"));
