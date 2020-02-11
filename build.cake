@@ -161,7 +161,7 @@ Task("Flyway.CommandLine")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "6.1.4";
+    var version = "6.2.2";
 
     var nuGetPackSettings = new NuGetPackSettings {
         Version                     = version,
