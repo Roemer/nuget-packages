@@ -126,6 +126,11 @@ Task("7-Zip.StandaloneConsole")
     resource = DownloadFile($"https://www.7-zip.org/a/7z{version.Replace(".", "")}-x64.exe");
     UnSevenZip(resource, temp);
 
+    var genericFiles = new [] {
+        new NuSpecContent { Source = temp + File("7-zip.chm"), Target = "tools" },
+        new NuSpecContent { Source = temp + File("readme.txt"), Target = "tools" },
+        new NuSpecContent { Source = temp + File("License.txt"), Target = "tools" },
+    };
     var nuGetPackSettings = new NuGetPackSettings {
         Id                          = "7-Zip.StandaloneConsole",
         Title                       = "7-Zip Standalone Console Version",
@@ -143,16 +148,30 @@ Task("7-Zip.StandaloneConsole")
         RequireLicenseAcceptance    = false,
         Symbols                     = false,
         NoPackageAnalysis           = true,
-        Files                       = new [] {
-                                        new NuSpecContent { Source = temp + File("7za.exe"), Target = "tools" },
-                                        new NuSpecContent { Source = temp + File("7-zip.chm"), Target = "tools" },
-                                        new NuSpecContent { Source = temp + File("readme.txt"), Target = "tools" },
-                                        new NuSpecContent { Source = temp + File("License.txt"), Target = "tools" },
+        Files                       = new List<NuSpecContent>(genericFiles) {
+                                        // x86
+                                        new NuSpecContent { Source = temp + File("7za.exe"), Target = @"tools" },
                                         // x64
                                         new NuSpecContent { Source = temp + Directory("x64") + File("7za.exe"), Target = @"tools\x64" }
                                     },
         BasePath                    = "./",
         OutputDirectory             = nugetDir
+    };
+
+    // Base version
+    NuGetPack(nuGetPackSettings);
+
+    // x64 version
+    nuGetPackSettings.Id = "7-Zip.StandaloneConsole.x64";
+    nuGetPackSettings.Files = new List<NuSpecContent>(genericFiles) {
+        new NuSpecContent { Source = temp + Directory("x64") + File("7za.exe"), Target = @"tools" }
+    };
+    NuGetPack(nuGetPackSettings);
+
+    // x86 version
+    nuGetPackSettings.Id = "7-Zip.StandaloneConsole.x86";
+    nuGetPackSettings.Files = new List<NuSpecContent>(genericFiles) {
+        new NuSpecContent { Source = temp + File("7za.exe"), Target = @"tools" }
     };
     NuGetPack(nuGetPackSettings);
 });
