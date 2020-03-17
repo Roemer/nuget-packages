@@ -180,6 +180,7 @@ Task("Flyway.CommandLine")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
+    var version = "6.3.1";
 
     var licenseFile = @"licenses\flyway-community.txt";
     //licenseFile = @"LICENSE.txt"; // For pre-6 versions
@@ -191,7 +192,7 @@ Task("Flyway.CommandLine")
         ProjectUrl                  = new Uri("https://github.com/Roemer/nuget-packages"),
         License                     = new NuSpecLicense {
                                         Type = "file",
-                                        Value = $@"tools\${licenseFile}"
+                                        Value = $@"tools\{licenseFile}"
                                     },
         IconUrl                     = new Uri("https://flywaydb.org/assets/logo/flyway-logo.png"),
         ReleaseNotes                = new [] {"All release notes can be found on - https://flywaydb.org/documentation/releaseNotes"},
