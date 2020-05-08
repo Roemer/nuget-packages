@@ -84,8 +84,8 @@ Task("dotnet-framework-sonarscanner")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "4.8.0";
-    var versionSuffix = "12008";
+    var version = "4.9.0";
+    var versionSuffix = "17385";
 
     var fullVersionString = $"{version}.{versionSuffix}";
     var resource = DownloadFile($"https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/{fullVersionString}/sonar-scanner-msbuild-{fullVersionString}-net46.zip");
@@ -180,7 +180,7 @@ Task("Flyway.CommandLine")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "6.4.0";
+    var version = "6.4.1";
 
     var licenseFile = @"licenses\flyway-community.txt";
     //licenseFile = @"LICENSE.txt"; // For pre-6 versions
