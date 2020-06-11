@@ -38,7 +38,7 @@ Task("JMeter")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var jMeterVersion = "5.2.1";
+    var jMeterVersion = "5.3";
     var jMeterPath = temp + Directory($"apache-jmeter-{jMeterVersion}");
     var libPath = jMeterPath + Directory("lib");
     var extPath = libPath + Directory("ext");
@@ -53,12 +53,12 @@ Task("JMeter")
     }
 
     // Install the plugin manager
-    DownloadFile("http://search.maven.org/remotecontent?filepath=kg/apc/jmeter-plugins-manager/1.3/jmeter-plugins-manager-1.3.jar", extPath + File("jmeter-plugins-manager-1.3.jar"));
+    DownloadFile("http://search.maven.org/remotecontent?filepath=kg/apc/jmeter-plugins-manager/1.4/jmeter-plugins-manager-1.4.jar", extPath + File("jmeter-plugins-manager-1.4.jar"));
 
     // Install the command runner
     DownloadFile("https://search.maven.org/remotecontent?filepath=kg/apc/cmdrunner/2.2/cmdrunner-2.2.jar", libPath + File("cmdrunner-2.2.jar"));
     // Generate the cmd wrappers
-    var exitCodeWithArgument = StartProcess("java", new ProcessSettings{ Arguments = $"-cp {jMeterPath}/lib/ext/jmeter-plugins-manager-1.3.jar org.jmeterplugins.repository.PluginManagerCMDInstaller" });
+    var exitCodeWithArgument = StartProcess("java", new ProcessSettings{ Arguments = $"-cp {jMeterPath}/lib/ext/jmeter-plugins-manager-1.4.jar org.jmeterplugins.repository.PluginManagerCMDInstaller" });
 
     // Create the NuGet package
     var nuGetPackSettings = new NuGetPackSettings {
