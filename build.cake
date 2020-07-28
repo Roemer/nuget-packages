@@ -232,6 +232,33 @@ Task("Flyway.CommandLine")
     }
 });
 
+
+Task("Docker-CLI")
+    .Does(() =>
+{
+    var version = "19.03.3";
+    DownloadFile($"https://github.com/StefanScherer/docker-cli-builder/releases/download/{version}/docker.exe", temp + File("docker.exe"));
+    var nuGetPackSettings = new NuGetPackSettings {
+        Id                          = "docker-cli",
+        Title                       = "Docker CLI for Windows",
+        Version                     = version,
+        Authors                     = new[] {"Docker", "StefanScherer", "Roemer"},
+        Description                 = "This package contains the docker-cli executable for Windows.",
+        ProjectUrl                  = new Uri("https://github.com/Roemer/nuget-packages"),
+        LicenseUrl                  = new Uri("https://github.com/StefanScherer/docker-cli-builder/blob/master/LICENSE"),
+        Tags                        = new [] {"docker", "cli", "windows"},
+        RequireLicenseAcceptance    = false,
+        Symbols                     = false,
+        NoPackageAnalysis           = true,
+        Files                       = new [] {
+                                        new NuSpecContent { Source = $@".temp\**", Target = "tools" }
+                                    },
+        BasePath                    = "./",
+        OutputDirectory             = nugetDir
+    };
+    NuGetPack(nuGetPackSettings);
+});
+
 Task("Push-Packages")
     .Does(() =>
 {
