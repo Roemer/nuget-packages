@@ -236,7 +236,7 @@ Task("Flyway.CommandLine")
 Task("Docker-CLI")
     .Does(() =>
 {
-    var version = "19.03.3";
+    var version = "19.03.12";
     DownloadFile($"https://github.com/StefanScherer/docker-cli-builder/releases/download/{version}/docker.exe", temp + File("docker.exe"));
     var nuGetPackSettings = new NuGetPackSettings {
         Id                          = "docker-cli",
