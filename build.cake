@@ -180,7 +180,7 @@ Task("Flyway.CommandLine")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "6.5.7";
+    var version = "7.0.2";
 
     var licenseFile = @"licenses\flyway-community.txt";
     //licenseFile = @"LICENSE.txt"; // For pre-6 versions
@@ -234,6 +234,7 @@ Task("Flyway.CommandLine")
 
 
 Task("Docker-CLI")
+    .IsDependentOn("Clean-Output")
     .Does(() =>
 {
     var version = "19.03.12";
