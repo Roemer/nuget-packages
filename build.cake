@@ -38,7 +38,7 @@ Task("JMeter")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var jMeterVersion = "5.4";
+    var jMeterVersion = "5.4.1";
     var jMeterPath = temp + Directory($"apache-jmeter-{jMeterVersion}");
     var libPath = jMeterPath + Directory("lib");
     var extPath = libPath + Directory("ext");
