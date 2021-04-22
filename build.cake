@@ -17,7 +17,6 @@ TaskSetup(setupContext =>
     CleanDirectory(temp);
 });
 
-
 Task("Clean-Output")
     .Does(() =>
 {
