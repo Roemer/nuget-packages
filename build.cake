@@ -232,12 +232,11 @@ Task("Flyway.CommandLine")
     }
 });
 
-
 Task("Docker-CLI")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "19.03.14";
+    var version = "20.10.5";
     DownloadFile($"https://github.com/StefanScherer/docker-cli-builder/releases/download/{version}/docker.exe", temp + File("docker.exe"));
     var nuGetPackSettings = new NuGetPackSettings {
         Id                          = "docker-cli",
