@@ -235,7 +235,7 @@ Task("Docker-CLI")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "20.10.5";
+    var version = "20.10.9";
     DownloadFile($"https://github.com/StefanScherer/docker-cli-builder/releases/download/{version}/docker.exe", temp + File("docker.exe"));
     var nuGetPackSettings = new NuGetPackSettings {
         Id                          = "docker-cli",
