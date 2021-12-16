@@ -179,7 +179,7 @@ Task("Flyway.CommandLine")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "7.15.0";
+    var version = "8.2.2";
 
     var licenseFile = @"licenses\flyway-community.txt";
     //licenseFile = @"LICENSE.txt"; // For pre-6 versions
