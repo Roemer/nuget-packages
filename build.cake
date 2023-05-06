@@ -236,7 +236,7 @@ Task("Docker-CLI")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "20.10.24"; 
+    var version = "23.0.5"; 
     var resource = DownloadFile($"https://download.docker.com/win/static/stable/x86_64/docker-{version}.zip");
     Unzip(resource, temp);
     var nuGetPackSettings = new NuGetPackSettings {
