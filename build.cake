@@ -84,8 +84,8 @@ Task("dotnet-framework-sonarscanner")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "5.9.2";
-    var versionSuffix = "58699";
+    var version = "5.13.0";
+    var versionSuffix = "66756";
 
     var fullVersionString = $"{version}.{versionSuffix}";
     var resource = DownloadFile($"https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/{fullVersionString}/sonar-scanner-msbuild-{fullVersionString}-net46.zip");
@@ -180,7 +180,7 @@ Task("Flyway.CommandLine")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "9.11.0";
+    var version = "9.17.0";
 
     var licenseFile = @"licenses\flyway-community.txt";
     //licenseFile = @"LICENSE.txt"; // For pre-6 versions
@@ -236,8 +236,9 @@ Task("Docker-CLI")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "20.10.9";
-    DownloadFile($"https://github.com/StefanScherer/docker-cli-builder/releases/download/{version}/docker.exe", temp + File("docker.exe"));
+    var version = "20.10.24"; 
+    var resource = DownloadFile($"https://download.docker.com/win/static/stable/x86_64/docker-{version}.zip");
+    Unzip(resource, temp);
     var nuGetPackSettings = new NuGetPackSettings {
         Id                          = "docker-cli",
         Title                       = "Docker CLI for Windows",
@@ -251,7 +252,7 @@ Task("Docker-CLI")
         Symbols                     = false,
         NoPackageAnalysis           = true,
         Files                       = new [] {
-                                        new NuSpecContent { Source = $@".temp\**", Target = "tools" }
+                                        new NuSpecContent { Source = $@".temp\docker\docker.exe", Target = "tools" }
                                     },
         BasePath                    = "./",
         OutputDirectory             = nugetDir
