@@ -84,8 +84,8 @@ Task("dotnet-framework-sonarscanner")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "5.13.1";
-    var versionSuffix = "76110";
+    var version = "5.14.0";
+    var versionSuffix = "78575";
 
     var fullVersionString = $"{version}.{versionSuffix}";
     var resource = DownloadFile($"https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/{fullVersionString}/sonar-scanner-msbuild-{fullVersionString}-net46.zip");
@@ -180,9 +180,10 @@ Task("Flyway.CommandLine")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "9.22.1";
+    var version = "10.0.1";
 
-    var licenseFile = @"licenses\flyway-community.txt";
+    var licenseFile = @"licenses\LICENSE.md";
+    //licenseFile = @"licenses\flyway-community.txt"; // For pre-10 versions
     //licenseFile = @"LICENSE.txt"; // For pre-6 versions
 
     var nuGetPackSettings = new NuGetPackSettings {
@@ -236,7 +237,7 @@ Task("Docker-CLI")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "24.0.6";    
+    var version = "24.0.7";    
     var resource = DownloadFile($"https://download.docker.com/win/static/stable/x86_64/docker-{version}.zip");
     Unzip(resource, temp);
 
