@@ -37,25 +37,20 @@ Task("JMeter")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var jMeterVersion = "5.5";
+    var jMeterVersion = "5.6.3";
     var jMeterPath = temp + Directory($"apache-jmeter-{jMeterVersion}");
     var libPath = jMeterPath + Directory("lib");
     var extPath = libPath + Directory("ext");
 
-    // Download and Extract JMeter (with two mirrors)
-    try {
-        var resource = DownloadFile($"http://www.pirbot.com/mirrors/apache//jmeter/binaries/apache-jmeter-{jMeterVersion}.zip");
-        Unzip(resource, temp);
-    } catch {
-        var resource = DownloadFile($"http://mirror.easyname.ch/apache//jmeter/binaries/apache-jmeter-{jMeterVersion}.zip");
-        Unzip(resource, temp);
-    }
+    // Download and Extract JMeter
+    var resource = DownloadFile($"https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-{jMeterVersion}.zip");
+    Unzip(resource, temp);
 
     // Install the plugin manager
-    var pluginManagerVersion = "1.7";
+    var pluginManagerVersion = "1.10";
     DownloadFile($"http://search.maven.org/remotecontent?filepath=kg/apc/jmeter-plugins-manager/{pluginManagerVersion}/jmeter-plugins-manager-{pluginManagerVersion}.jar", extPath + File($"jmeter-plugins-manager-{pluginManagerVersion}.jar"));
     // Install the command runner
-    var cmdRunnerVersion = "2.2";
+    var cmdRunnerVersion = "2.3";
     DownloadFile($"https://search.maven.org/remotecontent?filepath=kg/apc/cmdrunner/{cmdRunnerVersion}/cmdrunner-{cmdRunnerVersion}.jar", libPath + File($"cmdrunner-{cmdRunnerVersion}.jar"));
     // Generate the cmd wrappers
     var exitCodeWithArgument = StartProcess("java", new ProcessSettings{ Arguments = $"-cp {jMeterPath}/lib/ext/jmeter-plugins-manager-{pluginManagerVersion}.jar org.jmeterplugins.repository.PluginManagerCMDInstaller" });
@@ -75,7 +70,8 @@ Task("JMeter")
                                         new NuSpecContent { Source = $@".temp\apache-jmeter-{jMeterVersion}\**", Exclude = $@".temp\apache-jmeter-{jMeterVersion}\docs\**;.temp\apache-jmeter-{jMeterVersion}\printable_docs\**", Target = "tools" }
                                     },
         BasePath                    = "./",
-        OutputDirectory             = nugetDir
+        OutputDirectory             = nugetDir,
+        ArgumentCustomization       = args => args.Append("-NoDefaultExcludes"),
     };
     NuGetPack(nuGetPackSettings);
 });
@@ -118,7 +114,7 @@ Task("7-Zip.StandaloneConsole")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "22.01";
+    var version = "23.01";
 
     var resource = DownloadFile($"https://www.7-zip.org/a/7z{version.Replace(".", "")}-extra.7z");
     UnSevenZip(resource, temp);
@@ -180,7 +176,7 @@ Task("Flyway.CommandLine")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "10.0.1";
+    var version = "10.9.1";
 
     var licenseFile = @"licenses\LICENSE.md";
     //licenseFile = @"licenses\flyway-community.txt"; // For pre-10 versions
@@ -237,7 +233,7 @@ Task("Docker-CLI")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "24.0.7";    
+    var version = "25.0.4";    
     var resource = DownloadFile($"https://download.docker.com/win/static/stable/x86_64/docker-{version}.zip");
     Unzip(resource, temp);
 
