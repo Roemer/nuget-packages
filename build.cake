@@ -80,8 +80,8 @@ Task("dotnet-framework-sonarscanner")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "6.2.0";
-    var versionSuffix = "85879";
+    var version = "7.1.1";
+    var versionSuffix = "96069";
 
     var fullVersionString = $"{version}.{versionSuffix}";
     var resource = DownloadFile($"https://github.com/SonarSource/sonar-scanner-msbuild/releases/download/{fullVersionString}/sonar-scanner-{fullVersionString}-net-framework.zip");
@@ -114,7 +114,7 @@ Task("7-Zip.StandaloneConsole")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "23.01";
+    var version = "24.07";
 
     var resource = DownloadFile($"https://www.7-zip.org/a/7z{version.Replace(".", "")}-extra.7z");
     UnSevenZip(resource, temp);
@@ -176,7 +176,7 @@ Task("Flyway.CommandLine")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "10.9.1";
+    var version = "10.17.0";
 
     var licenseFile = @"licenses\LICENSE.md";
     //licenseFile = @"licenses\flyway-community.txt"; // For pre-10 versions
@@ -233,7 +233,7 @@ Task("Docker-CLI")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "25.0.4";    
+    var version = "27.1.1";    
     var resource = DownloadFile($"https://download.docker.com/win/static/stable/x86_64/docker-{version}.zip");
     Unzip(resource, temp);
 
