@@ -233,7 +233,7 @@ Task("Docker-CLI")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "27.1.1";    
+    var version = "27.5.1";    
     var resource = DownloadFile($"https://download.docker.com/win/static/stable/x86_64/docker-{version}.zip");
     Unzip(resource, temp);
 
