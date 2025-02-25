@@ -114,7 +114,7 @@ Task("7-Zip.StandaloneConsole")
     .IsDependentOn("Clean-Output")
     .Does(() =>
 {
-    var version = "24.07";
+    var version = "24.09";
 
     var resource = DownloadFile($"https://www.7-zip.org/a/7z{version.Replace(".", "")}-extra.7z");
     UnSevenZip(resource, temp);
